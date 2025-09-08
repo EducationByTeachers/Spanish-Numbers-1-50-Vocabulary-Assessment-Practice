@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spanish Numbers 1-50 Vocabulary Assessment</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      text-align: center;
+      color: #1E3A8A;
+    }
+    .question {
+      margin-bottom: 25px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fff;
+    }
+    .options button {
+      margin: 6px;
+      padding: 10px 15px;
+      background: #4b7bfd;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .options button:hover {
+      background: #1E3A8A;
+    }
+    .options button.selected {
+      background: #16a34a !important; /* verde cuando está seleccionado */
+    }
+    .hidden { display: none; }
+    input[type="text"] {
+      padding: 10px;
+      width: 90%;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .submit-btn, .restart-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: #1E3A8A;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .submit-btn:hover, .restart-btn:hover {
+      background: #4b7bfd;
+    }
+    .result {
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      color: #1E3A8A;
+    }
+  </style>
+</head>
+<body>
+  <!-- Ventana 1: Intro -->
+  <div id="intro" class="container">
+    <h1>Welcome, Student! Let's begin the test.</h1>
+    <p><b>Student Name:</b></p>
+    <input type="text" id="studentName" placeholder="Enter your name" required>
+    <button class="submit-btn" onclick="startExam()">Start Exam</button>
+  </div>
+
+  <!-- Ventana 2: Examen -->
+  <div id="exam" class="container hidden">
+    <h2>Spanish Numbers 1-50 Vocabulary Assessment</h2>
+    <div id="questions"></div>
+    <button class="submit-btn" onclick="submitExam()">Submit Exam</button>
+    <div id="result" class="result"></div>
+    <button class="restart-btn hidden" onclick="restartExam()">Restart Exam</button>
+  </div>
+
+  <script>
+    const questionsData = [
+      {q:"What is the Spanish word for 'fifteen'?", options:["veinte","quince","doce","dieciséis"], answer:"quince"},
+      {q:"How do you say 'thirty-two' in Spanish?", options:["veintitrés","treinta y dos","cuarenta y dos","veintidós"], answer:"treinta y dos"},
+      {q:"What number does 'cuarenta y cinco' represent?", options:["35","55","45","25"], answer:"45"},
+      {q:"How do you write 'twenty-seven' in Spanish?", options:["veintisiete","treinta y siete","diecisiete","veinticinco"], answer:"veintisiete"},
+      {q:"What is 'diez' in English?", options:["twelve","fifteen","eleven","ten"], answer:"ten"},
+      {q:"Which Spanish number means 'forty'?", options:["cincuenta","cuarenta","treinta","sesenta"], answer:"cuarenta"},
+      {q:"What is the Spanish word for 'eighteen'?", options:["diecinueve","veinte","dieciocho","dieciséis"], answer:"dieciocho"},
+      {q:"How do you say 'thirty-five' in Spanish?", options:["cuarenta y cinco","veinticinco","treinta y cinco","cincuenta y cinco"], answer:"treinta y cinco"},
+      {q:"What number is 'veintinueve'?", options:["19","39","49","29"], answer:"29"},
+      {q:"How do you write 'forty-eight' in Spanish?", options:["treinta y ocho","cuarenta y ocho","cincuenta y ocho","veintiocho"], answer:"cuarenta y ocho"},
+      {q:"What does 'treinta' mean?", options:["thirteen","twenty","forty","thirty"], answer:"thirty"},
+      {q:"How do you say 'twenty-three' in Spanish?", options:["veintitrés","treinta y tres","trece","veinte"], answer:"veintitrés"},
+      {q:"What number is 'cincuenta'?", options:["15","40","50","30"], answer:"50"},
+      {q:"Which Spanish word means 'sixteen'?", options:["diecisiete","dieciséis","veintiséis","treinta y seis"], answer:"dieciséis"},
+      {q:"How do you write 'thirty-seven' in Spanish?", options:["veintisiete","cuarenta y siete","treinta y siete","diecisiete"], answer:"treinta y siete"},
+      {q:"What is 'veinticinco' in English?", options:["thirty-five","fifteen","twenty-five","forty-five"], answer:"twenty-five"},
+      {q:"How do you say 'forty-three' in Spanish?", options:["treinta y tres","cuarenta y tres","veintitrés","cincuenta y tres"], answer:"cuarenta y tres"},
+      {q:"What does 'doce' mean?", options:["two","twenty","twelve","eleven"], answer:"twelve"},
+      {q:"How do you write 'forty-seven' in Spanish?", options:["treinta y siete","cuarenta y siete","cincuenta y siete","veintisiete"], answer:"cuarenta y siete"},
+      {q:"What number is 'treinta y nueve'?", options:["29","49","19","39"], answer:"39"}
+    ];
+
+    let studentAnswers = {};
+
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function startExam() {
+      const name = document.getElementById('studentName').value.trim();
+      if (!name) {
+        alert("Please enter your name.");
+        return;
+      }
+      document.getElementById('intro').classList.add('hidden');
+      document.getElementById('exam').classList.remove('hidden');
+      loadQuestions();
+    }
+
+    function loadQuestions() {
+      const container = document.getElementById('questions');
+      container.innerHTML = "";
+      studentAnswers = {};
+
+      questionsData.forEach((item, index) => {
+        const shuffledOptions = shuffle([...item.options]);
+        const div = document.createElement("div");
+        div.className = "question";
+        div.innerHTML = `<p><b>${index+1}. ${item.q}</b></p>`;
+        
+        const optionsDiv = document.createElement("div");
+        optionsDiv.className = "options";
+
+        shuffledOptions.forEach(opt => {
+          const btn = document.createElement("button");
+          btn.textContent = opt;
+          btn.onclick = () => {
+            studentAnswers[index] = opt;
+            // quitar selección previa en este grupo
+            [...optionsDiv.children].forEach(b => b.classList.remove("selected"));
+            btn.classList.add("selected");
+          };
+          optionsDiv.appendChild(btn);
+        });
+
+        div.appendChild(optionsDiv);
+        container.appendChild(div);
+      });
+    }
+
+    function submitExam() {
+      let score = 0;
+      questionsData.forEach((item, i) => {
+        if (studentAnswers[i] === item.answer) {
+          score++;
+        }
+      });
+      document.getElementById('result').textContent = `Your Score: ${score} / ${questionsData.length}`;
+      document.querySelector('.restart-btn').classList.remove('hidden');
+    }
+
+    function restartExam() {
+      document.getElementById('result').textContent = "";
+      document.querySelector('.restart-btn').classList.add('hidden');
+      loadQuestions(); // reload with shuffled answers
+      window.scrollTo(0,0);
+    }
+  </script>
+</body>
+</html>
